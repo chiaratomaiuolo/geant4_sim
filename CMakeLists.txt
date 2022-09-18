@@ -23,7 +23,7 @@ file(GLOB MACRO_FILES
 file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 
 # for creating the executables
-add_executable(sim sim.cc ${sources} ${headers})
-target_link_libraries(sim ${Geant4_LIBRARIES})
+add_executable(geant4_sim geant4_sim.cc ${sources} ${headers})
+target_link_libraries(geant4_sim ${Geant4_LIBRARIES})
 
-add_custom_target(Simulation DEPENDS sim)
+add_custom_target(Simulation DEPENDS geant4_sim)
