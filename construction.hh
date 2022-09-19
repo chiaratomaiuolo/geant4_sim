@@ -23,9 +23,14 @@ public:
 
 private: //the sensitive volume of the detector has to refer to the logical volume
          //so it has to be defined outside the construction void function.
-    G4LogicalVolume *logicDetector;
+         //For each sensitive geometry, a different logical volume has to be declared.
+    G4LogicalVolume *logicCylinder;
+    G4LogicalVolume *logicRing;
+    G4LogicalVolume *logicArm;
+    G4LogicalVolume *logicLowEndcap;
+    G4LogicalVolume *logicUpEndcap;
     //Defining the function that constructs the sensitive detector
-    //virtual void ConstructSDandField();
+    virtual void ConstructSDandField();
     
 };
 

@@ -1,6 +1,11 @@
 #include "generator.hh"
+#include "Parameters.hh"
 #include "TMath.h"
 #include "TF1.h"
+
+using namespace GunParameters;
+
+
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
     //Defining the particle gun characteristics. Here it is chosen to have one 
@@ -34,9 +39,17 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     fParticleGun->SetParticleDefinition(particle);
     fParticleGun->SetParticlePosition(starting_pos);
     fParticleGun->SetParticleMomentumDirection(mom_direction);
-    fParticleGun->SetParticleEnergy(17.6*MeV);
-
+    if(function=="gaussian"){
+        TF1 gauss = TF1("gauss", "gaus(0)",16.,19.);
+        gauss.SetParameter(0,1);
+        gauss.SetParameter(1,mean);
+        gauss.SetParameter(2,sigma);
+        double photon_energy = gauss.GetRandom();
+        fParticleGun->SetParticleEnergy(photon_energy*MeV);
+    }
+    else{
+        fParticleGun->SetParticleEnergy(17.6*MeV);
+    }
     fParticleGun->GeneratePrimaryVertex(anEvent);
-
 
 }
