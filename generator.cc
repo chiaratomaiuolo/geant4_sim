@@ -1,5 +1,6 @@
 #include "generator.hh"
-
+#include "TMath.h"
+#include "TF1.h"
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
     //Defining the particle gun characteristics. Here it is chosen to have one 
@@ -16,17 +17,24 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 {
     //Defining the kind of particle to be shot
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
-    //Shooting a proton
-    G4String particleName = "proton";
-    G4ParticleDefinition *particle = particleTable->FindParticle("proton");
+    //Shooting a photon
+    G4String particleName = "gamma";
+    G4ParticleDefinition *particle = particleTable->FindParticle("gamma");
     //Defining the position and starting momentum of the shot particle
-    G4ThreeVector pos(0.,0.,0.);
+    G4ThreeVector starting_pos(0.,0.,0.);
     G4ThreeVector mom(0.,0.,1.);
+    TF1 random_pi = TF1("random_pi", "1", -3.14, 3.14);
+    double theta_gamma = random_pi.GetRandom();
+    TF1 random = TF1("random", "1", 0, 1);
+    double phi_gamma = TMath::ACos(1-2*random.GetRandom());
+    G4ThreeVector mom_direction(TMath::Sin(phi_gamma)*TMath::Cos(theta_gamma),TMath::Sin(phi_gamma)*TMath::Sin(theta_gamma),TMath::Cos(phi_gamma));
 
-    fParticleGun->SetParticlePosition(pos);
-    fParticleGun->SetParticleMomentumDirection(mom);
-    fParticleGun->SetParticleMomentum(100.*GeV);
+
+    //Setting the particle gun characteristics
     fParticleGun->SetParticleDefinition(particle);
+    fParticleGun->SetParticlePosition(starting_pos);
+    fParticleGun->SetParticleMomentumDirection(mom_direction);
+    fParticleGun->SetParticleEnergy(17.6*MeV);
 
     fParticleGun->GeneratePrimaryVertex(anEvent);
 

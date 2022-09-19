@@ -28,9 +28,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //1) defining material
 
     //Carbon fiber material
-    G4Material *Cu = nist->FindOrBuildMaterial("Cu");
+    G4Material *Cu = nist->FindOrBuildMaterial("G4_Cu");
     G4Element *C = nist->FindOrBuildElement("C");
-    G4Material *Al = nist->FindOrBuildMaterial("Al");
+    G4Material *Al = nist->FindOrBuildMaterial("G4_Al");
     G4Material *Carbon_fiber = new G4Material("Carbon_fiber", 1.6*g/cm3,1); 
     Carbon_fiber->AddElement(C, 100*perCent);
     //2) defining properties of the material
@@ -79,7 +79,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //Support ring
     G4VPhysicalVolume *physRing = new G4PVPlacement(0,G4ThreeVector(0.,0.,3.2*mm),logicRing,"physRing",logicWorld,false,0,true);
     //Copper arm
-    G4VPhysicalVolume *physArm = new G4PVPlacement(0,G4ThreeVector(28*mm,0.,100.*mm),logicArm,"physArm",logicWorld,false,0,true);
+    G4VPhysicalVolume *physArm = new G4PVPlacement(0,G4ThreeVector(28*mm,0.,106.*mm),logicArm,"physArm",logicWorld,false,0,true);
     //Upper cylinder endcap
     G4VPhysicalVolume *physUpEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,150.*mm),logicUpEndcap,"physUpEndcap",logicWorld,false,0,true);
     //Lower cylinder endcap

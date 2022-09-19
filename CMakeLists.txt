@@ -18,6 +18,10 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/*.hh)
 file(GLOB MACRO_FILES
     "*.mac"
 )
+
+set(CMAKE_CXX_FLAGS "-stdlib=libc++ -pthread -std=c++17 -m64 -I/opt/homebrew/Cellar/root/6.26.06_1/include/root -L/opt/homebrew/Cellar/root/6.26.06_1/lib/root -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lROOTDataFrame -Wl,-rpath,/opt/homebrew/Cellar/root/6.26.06_1/lib/root -stdlib=libc++ -lpthread -lm -ldl")
+
+
 #copying all the macro files inside the build directory (in this way 
 #in build folder the .mac files are found in make)
 file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
