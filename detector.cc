@@ -21,22 +21,61 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     
     const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
     //G4int copyNo = touchable->GetCopyNumber();
-
+    G4int evt = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
     G4String SDName = preStepPoint->GetSensitiveDetector()->GetName();
     G4cout << "Triggered detector:" << SDName << G4endl; 
 
+    G4AnalysisManager *man = G4AnalysisManager::Instance();
+
     if(track->GetTrackStatus()==2){
-        G4cout << "Triggered detector:" << SDName << G4endl;
+        G4cout << "particle stopped in this detector:" << SDName << G4endl;
+    }
+    //Killing particles whose escape from cylinder
+    if(SDName=="WallsSensitiveDetector" && aStep->IsLastStepInVolume() == true)
+    {
+        track->SetTrackStatus(fStopAndKill);
     }
 
-    G4int evt = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-/*
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
-    man->FillNtupleIColumn(0,evt);
-    man->FillNtupleDColumn(1,posDetector[0]);
-    man->FillNtupleDColumn(2,posDetector[1]);
-    man->FillNtupleDColumn(3,posDetector[2]);
-    man->AddNtupleRow(0);
-*/
+    if(SDName=="LowEndSensitiveDetector" && aStep->IsLastStepInVolume() == true)
+    {
+        track->SetTrackStatus(fStopAndKill);
+    }
+
+    if(SDName=="UpEndSensitiveDetector" && aStep->IsLastStepInVolume() == true)
+    {
+        track->SetTrackStatus(fStopAndKill);
+    }
+
+    
+
+    //Selecting electrons and positrons inside the ring, saving global times for further selection offline
+    //Selecting values
+    G4bool first_step = aStep->IsFirstStepInVolume();
+    G4String ParticleName = track->GetParticleDefinition()->GetParticleName();
+    //If selections and storing in histos
+    if(SDName=="RingSensitiveDetector" && aStep->IsFirstStepInVolume() == true && track->GetParticleDefinition()->GetParticleName() == "e-")
+    {
+        G4double time_electron = track->GetGlobalTime(); 
+        man->FillNtupleDColumn(0,0,time_electron);
+        man->FillNtupleDColumn(0,1,track->GetTotalEnergy());
+        man->AddNtupleRow(0);
+    }
+
+    if(SDName=="RingSensitiveDetector" && first_step == true && ParticleName == "e+")
+    {
+        G4double time_positron = track->GetGlobalTime(); 
+        man->FillNtupleDColumn(1,0,time_positron);
+        man->FillNtupleDColumn(1,1,track->GetTotalEnergy());
+        man->AddNtupleRow(1);
+    }
+
+    //G4String process_type = preStepPoint->GetProcessDefinedStep()->GetProcessName();
+    
+    //man->FillNtupleIColumn(0,0,evt);
+    //man->FillNtupleSColumn(0,0,process_type);
+    //man->FillNtupleSColumn(0,1,SDName);
+
+    
+
     return true;
 }

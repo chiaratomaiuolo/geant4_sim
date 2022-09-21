@@ -1,5 +1,4 @@
 #include "construction.hh"
-//#include ""
 #include "detector.hh"
 #include <vector>
 MyDetectorConstruction::MyDetectorConstruction()
@@ -67,6 +66,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     logicRing->SetVisAttributes(cRed);
     //Copper arm
     logicArm = new G4LogicalVolume(CopperArm,Cu,"logicArm");
+    logicArm->SetVisAttributes(cRed);
     //Upper cylinder endcap
     logicUpEndcap = new G4LogicalVolume(UpEndcap,Al,"logicUpEndcap");
     //Lower cylinder endcap
@@ -83,9 +83,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //Copper arm
     G4VPhysicalVolume *physArm = new G4PVPlacement(0,G4ThreeVector(28*mm,0.,77.05*mm),logicArm,"physArm",logicWorld,false,0,true);
     //Upper cylinder endcap
-    //G4VPhysicalVolume *physUpEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,149*mm),logicUpEndcap,"physUpEndcap",logicWorld,false,0,true);
+    G4VPhysicalVolume *physUpEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,149*mm),logicUpEndcap,"physUpEndcap",logicWorld,false,0,true);
     //Lower cylinder endcap
-    //G4VPhysicalVolume *physLowEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,-149.*mm),logicLowEndcap,"physLowEndcap",logicWorld,false,0,true);
+    G4VPhysicalVolume *physLowEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,-149.*mm),logicLowEndcap,"physLowEndcap",logicWorld,false,0,true);
     //Cylindrical walls
     G4VPhysicalVolume *physCylinder = new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),logicCylinder,"physCylinder",logicWorld,false,0,true);
     
@@ -102,17 +102,24 @@ void MyDetectorConstruction::ConstructSDandField()
     //Ring detector 
     MySensitiveDetector *sensDetRing = new MySensitiveDetector("RingSensitiveDetector");
     logicRing->SetSensitiveDetector(sensDetRing);
-    //
+    //Arm detector
     MySensitiveDetector *sensDetArm = new MySensitiveDetector("ArmSensitiveDetector");
     logicArm->SetSensitiveDetector(sensDetArm);
+    //Low endcap detector
     MySensitiveDetector *sensDetLowEnd = new MySensitiveDetector("LowEndSensitiveDetector");
     logicLowEndcap->SetSensitiveDetector(sensDetLowEnd);
+    //Up endcap detector
     MySensitiveDetector *sensDetUpEnd = new MySensitiveDetector("UpEndSensitiveDetector");
     logicUpEndcap->SetSensitiveDetector(sensDetUpEnd);
 
 
     //SDParticleFilter() is the class for making filters of sensitive geometries.
     //sensDetWalls->SetFilter()
+    G4SDParticleFilter* epFilter = new G4SDParticleFilter("epFilter");
+    epFilter->add("e-");
+    epFilter->add("e+");
+    sensDetRing->SetFilter(epFilter);
+
 }
 
 

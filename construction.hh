@@ -8,6 +8,7 @@
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4PVPlacement.hh"
+#include "G4SDParticleFilter.hh"
 #include "G4NistManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4VisAttributes.hh"
@@ -24,6 +25,8 @@ public:
 private: //the sensitive volume of the detector has to refer to the logical volume
          //so it has to be defined outside the construction void function.
          //For each sensitive geometry, a different logical volume has to be declared.
+
+
     G4LogicalVolume *logicCylinder;
     G4LogicalVolume *logicRing;
     G4LogicalVolume *logicArm;
@@ -33,6 +36,5 @@ private: //the sensitive volume of the detector has to refer to the logical volu
     virtual void ConstructSDandField();
     
 };
-
 
 #endif
