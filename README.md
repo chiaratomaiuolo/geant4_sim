@@ -1,4 +1,4 @@
-#X-17 target simulation
+# X-17 target simulation
 
 This is a dummy Geant4 simulation for the X-17 target in MEG II experiment apparatus. 
 
