@@ -1,0 +1,4 @@
+/Users/chiara/Desktop/geant4_sim/build/CMakeFiles/geant4_sim.dir
+/Users/chiara/Desktop/geant4_sim/build/CMakeFiles/Simulation.dir
+/Users/chiara/Desktop/geant4_sim/build/CMakeFiles/edit_cache.dir
+/Users/chiara/Desktop/geant4_sim/build/CMakeFiles/rebuild_cache.dir

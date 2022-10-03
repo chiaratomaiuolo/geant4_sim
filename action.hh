@@ -4,6 +4,7 @@
 #include "G4VUserActionInitialization.hh"
 #include "generator.hh"
 #include "run.hh"
+//#include "event.hh"
 
 //This is the class to inherit from for creating the particle gun and then 
 //calculating stuff during the events.

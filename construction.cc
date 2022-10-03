@@ -1,6 +1,18 @@
 #include "construction.hh"
 #include "detector.hh"
 #include <vector>
+/*
+In this file, the detector is constructed, composed by many volume pieces:
+1. a world box, containing all the pieces;
+2. the source, a Cu foil where protons from CW hit;
+3. The support pieces, composed by:
+    - a Cu ring, where the source is stuck on;
+    - a Cu arm, from the ring to the cylindrical external support
+4. A cylindrical external support, composed by: 
+    - Carbon fiber lateral surface;
+    - Al endcaps.
+*/
+
 MyDetectorConstruction::MyDetectorConstruction()
 {}
 
@@ -44,23 +56,28 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     //3) defining the volume geometry
     //Source foil
-    G4Tubs *SourceFoil = new G4Tubs("Source foil", 0.*mm,26*mm,10*um,0,CLHEP::twopi);
+    G4Tubs *SourceFoil = new G4Tubs("Source foil", 0.*mm,26*mm,12.5*um,0,CLHEP::twopi);
+    //Control foil (for upstream/downstream discrimination)
+    G4Tubs *ControlFoil = new G4Tubs("Control foil", 0.*mm,26*mm,0.5*mm,0,CLHEP::twopi);
     //Support ring
     G4Tubs *SupportRing = new G4Tubs("Support ring",25.*mm,31.*mm,3.*mm,0,CLHEP::twopi);
     //Copper arm
-    G4Tubs *CopperArm = new G4Tubs("Copper arm",0.*mm,3.*mm,70.95*mm,0,CLHEP::twopi);
+    G4Tubs *CopperArm = new G4Tubs("Copper arm",0.*mm,3.*mm,136.9875*mm,0,CLHEP::twopi);
     //Upper cylinder endcap
     G4Tubs *UpEndcap = new G4Tubs("Upper endcap",0.*mm,49.0*mm,1*mm,0,CLHEP::twopi);
     //Lower cylinder endcap
     G4Tubs *LowEndcap = new G4Tubs("Lower endcap",0.*mm,49.0*mm,1*mm,0,CLHEP::twopi);
     //Cylindrical walls
-    G4Tubs *CylindricalWalls = new G4Tubs("Cylindrical walls",48.9*mm,49.0*mm,148*mm,0,CLHEP::twopi);
+    G4Tubs *CylindricalWalls = new G4Tubs("Cylindrical walls",48.9*mm,49.0*mm,150*mm,0,CLHEP::twopi);
+    //Vacuum sensitive detector on upper foil face
     
     
     //4) defining the material of the volume
     //Source foil
-    G4LogicalVolume *logicFoil = new G4LogicalVolume(SourceFoil,Cu,"logicFoil");
+    logicFoil = new G4LogicalVolume(SourceFoil,Cu,"logicFoil");
     logicFoil->SetVisAttributes(cBlue);
+    //Control foil (for upstream/downstream discrimination) it is made by vacuum, it is needed only for tagging
+    logicControlFoil = new G4LogicalVolume(ControlFoil,worldMat,"logicFoil");
     //Support ring 
     logicRing = new G4LogicalVolume(SupportRing,Cu,"logicRing");
     logicRing->SetVisAttributes(cRed);
@@ -78,16 +95,18 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //5) defining the physical features
     //Source foil
     G4VPhysicalVolume *physFoil = new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),logicFoil,"physFoil",logicWorld,false,0,true);
+    //Control foil (for upstream/downstream discrimination)
+    G4VPhysicalVolume *physControlFoil = new G4PVPlacement(0,G4ThreeVector(0.,0.,-0.5125*mm),logicControlFoil,"physControlFoil",logicWorld,false,0,true);
     //Support ring
-    G4VPhysicalVolume *physRing = new G4PVPlacement(0,G4ThreeVector(0.,0.,3.05*mm),logicRing,"physRing",logicWorld,false,0,true);
+    G4VPhysicalVolume *physRing = new G4PVPlacement(0,G4ThreeVector(0.,0.,3.0125*mm),logicRing,"physRing",logicWorld,false,0,true);
     //Copper arm
-    G4VPhysicalVolume *physArm = new G4PVPlacement(0,G4ThreeVector(28*mm,0.,77.05*mm),logicArm,"physArm",logicWorld,false,0,true);
+    G4VPhysicalVolume *physArm = new G4PVPlacement(0,G4ThreeVector(28*mm,0.,143.*mm),logicArm,"physArm",logicWorld,false,0,true);
     //Upper cylinder endcap
-    G4VPhysicalVolume *physUpEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,149*mm),logicUpEndcap,"physUpEndcap",logicWorld,false,0,true);
+    G4VPhysicalVolume *physUpEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,280.9875*mm),logicUpEndcap,"physUpEndcap",logicWorld,false,0,true);
     //Lower cylinder endcap
-    G4VPhysicalVolume *physLowEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,-149.*mm),logicLowEndcap,"physLowEndcap",logicWorld,false,0,true);
+    G4VPhysicalVolume *physLowEndcap = new G4PVPlacement(0,G4ThreeVector(0.,0.,-21.0125*mm),logicLowEndcap,"physLowEndcap",logicWorld,false,0,true);
     //Cylindrical walls
-    G4VPhysicalVolume *physCylinder = new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),logicCylinder,"physCylinder",logicWorld,false,0,true);
+    G4VPhysicalVolume *physCylinder = new G4PVPlacement(0,G4ThreeVector(0.,0.,129.9875),logicCylinder,"physCylinder",logicWorld,false,0,true);
     
     //Always return the 'mother' volume, because contains all the other volumes
     return physWorld; 
@@ -96,6 +115,13 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 void MyDetectorConstruction::ConstructSDandField()
 {
+
+    //Foil disc detector
+    MySensitiveDetector *sensDetFoil = new MySensitiveDetector("FoilSensitiveDetector");
+    logicFoil->SetSensitiveDetector(sensDetFoil);
+    //Control foil sensitive detector
+    MySensitiveDetector *sensDetControlFoil = new MySensitiveDetector("ControlFoilSensitiveDetector");
+    logicControlFoil->SetSensitiveDetector(sensDetControlFoil);
     //Cylindrical walls detector
     MySensitiveDetector *sensDetWalls = new MySensitiveDetector("WallsSensitiveDetector");
     logicCylinder->SetSensitiveDetector(sensDetWalls);
@@ -112,15 +138,8 @@ void MyDetectorConstruction::ConstructSDandField()
     MySensitiveDetector *sensDetUpEnd = new MySensitiveDetector("UpEndSensitiveDetector");
     logicUpEndcap->SetSensitiveDetector(sensDetUpEnd);
 
-
-    //SDParticleFilter() is the class for making filters of sensitive geometries.
-    //sensDetWalls->SetFilter()
-    G4SDParticleFilter* epFilter = new G4SDParticleFilter("epFilter");
-    epFilter->add("e-");
-    epFilter->add("e+");
-    sensDetRing->SetFilter(epFilter);
-
 }
+
 
 
 

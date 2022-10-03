@@ -27,6 +27,8 @@ private: //the sensitive volume of the detector has to refer to the logical volu
          //For each sensitive geometry, a different logical volume has to be declared.
 
 
+    G4LogicalVolume *logicFoil;
+    G4LogicalVolume *logicControlFoil;
     G4LogicalVolume *logicCylinder;
     G4LogicalVolume *logicRing;
     G4LogicalVolume *logicArm;

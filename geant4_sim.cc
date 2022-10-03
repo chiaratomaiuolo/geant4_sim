@@ -29,12 +29,12 @@ int main(int argc, char** argv)
     //Giving commands for the user interface to visualize the OGL, the volume, starting position.
     UImanager->ApplyCommand("/vis/open OGL");
     UImanager->ApplyCommand("/vis/drawVolume");
-    UImanager->ApplyCommand("/vis/scene/add/axes");
+    //UImanager->ApplyCommand("/vis/scene/add/axes");
     UImanager->ApplyCommand("/vis/geometry/set/forceAuxEdgeVisible all");
     UImanager->ApplyCommand("/vis/geometry/set/visibility logicWorld 0 false");
     //UImanager->ApplyCommand("/tracking/verbose 2");
     //UImanager->ApplyCommand("/vis/viewer/set/viewpointVector 1 1 1");
-    UImanager->ApplyCommand("/run/BeamOn 100");
+    //UImanager->ApplyCommand("/run/BeamOn 100");
     UImanager->ApplyCommand("/vis/viewer/set/AutoRefresh true");
     UImanager->ApplyCommand("/vis/scene/add/trajectories smooth");
     UImanager->ApplyCommand("/vis/scene/endOfEventAction accumulate");

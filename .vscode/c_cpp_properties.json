@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/Users/chiara/Documents/Geant4/geant4-v11.0.3-install/include/Geant4",
-                "/opt/homebrew/Cellar/root/6.26.06_1"
+                "/opt/homebrew/Cellar/root/6.26.06_1",
+                "/opt/homebrew/Cellar/root/6.26.06_1/include/root"
             ],
             "defines": [],
             "macFrameworkPath": [
